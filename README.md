@@ -1,2 +1,2 @@
 # DataBusCppSim
-Symulator stanowiska laboratoryjnego "sterownaie szyną danych"
+Symulator stanowiska laboratoryjnego "STEROWANIE SZYNĄ DANYCH"

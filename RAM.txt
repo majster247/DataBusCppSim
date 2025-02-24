@@ -1,0 +1,17 @@
+# komentarz należy zacząć od #
+# każda linia powinna posiadać łącznie 8 zer lub jedynek
+# wpisanie innej wartości spowoduje stan nieustalony
+# linie danych wykraczające poza rozmiar pamięci nie zostaną wczytane
+# dla pustych linii zachowanie jest niezdefiniowane
+# przejście do kolejnego polecenia wykonuje się klawiszem enter
+# wpisanie 'q' i enter spowoduje zamknięcie programu
+# linia 0
+00000000
+10100101
+00101001
+01001100
+# linia 1
+00000001
+00110010
+01010101
+10000100

@@ -5,6 +5,7 @@
 # dla pustych linii zachowanie jest niezdefiniowane
 # przejście do kolejnego polecenia wykonuje się klawiszem enter
 # wpisanie 'q' i enter spowoduje zamknięcie programu
+# wpisanie 'n' spowoduje przejście w tryb pracy bez zatrzymania
 # linia 0
 00000000
 10100101

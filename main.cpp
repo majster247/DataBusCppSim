@@ -11,7 +11,7 @@ class microcycle
 {
 private:
     std::vector<bitType> data;
-    const int capacity=8;
+    const uint8_t capacity=8;
 public:
     microcycle()
     {
@@ -19,26 +19,26 @@ public:
     }
     friend std::ostream& operator<<(std::ostream& os, const microcycle& obj)
     {
-        for(int k=0;k<obj.data.size();++k)
+        for(uint8_t k=0;k<obj.data.size();++k)
             os<<(int)obj.data[k];
         return os;
     }
     void strRead(const std::string &_text)
     {
         if(_text.size()!=capacity) return;
-        for(int k=0;k<capacity;k++)
+        for(uint8_t k=0;k<capacity;k++)
             data[k]=_text[k];
     }
-    bitType& operator[](int _idx) {return data[_idx];}
-    int getTxId(void) const {return data[0]*4+data[1]*2+data[2];}
-    int getRxId(void) const {return data[3]*4+data[4]*2+data[5];}
+    bitType& operator[](uint8_t _idx) {return data[_idx];}
+    uint8_t getTxId(void) const {return data[0]*4+data[1]*2+data[2];}
+    uint8_t getRxId(void) const {return data[3]*4+data[4]*2+data[5];}
 };
 
 class cycle
 {
 private:
     std::vector<microcycle> data;
-    const int capacity=4;
+    const uint8_t capacity=4;
 public:
     cycle()
     {
@@ -46,18 +46,18 @@ public:
     }
     friend std::ostream& operator<<(std::ostream& os, const cycle& obj)
     {
-        for(int k=0;k<obj.data.size();++k)
+        for(uint8_t k=0;k<obj.data.size();++k)
             os<<obj.data[k]<<"\n";
         return os;
     }
-    microcycle& operator[](int _idx) {return data[_idx];}
+    microcycle& operator[](uint8_t _idx) {return data[_idx];}
 };
 
 class ram
 {
 private:
     std::vector<cycle> data;
-    const int capacity=8;
+    const uint8_t capacity=8;
 public:
     ram()
     {
@@ -65,21 +65,21 @@ public:
     }
     friend std::ostream& operator<<(std::ostream& os, const ram& obj)
     {
-        for(int k=0;k<obj.data.size();++k)
+        for(uint8_t k=0;k<obj.data.size();++k)
             os<<obj.data[k]<<"\n";
         return os;
     }
-    cycle& operator[](int _idx) {return data[_idx];}
+    cycle& operator[](uint8_t _idx) {return data[_idx];}
     void readFromFile(const std::string &_filename)
     {
         std::ifstream file(_filename);
         std::string str;
-        int cycle=0;
-        int microcycle=0;
+        uint8_t cycle=0;
+        uint8_t microcycle=0;
         while(std::getline(file, str))
         {
             if(str[0]=='#') continue;
-            for(int k=0;k<8;k++)
+            for(uint8_t k=0;k<8;k++)
                 data[cycle][microcycle][k]=str[k]-48;
             ++microcycle;
             cycle+=microcycle/4;
@@ -93,76 +93,74 @@ class reg
 {
 private:
     std::vector<bitType> data;
-    int capacity;
+    uint8_t capacity;
 public:
-    reg(int _c)
+    reg(uint8_t _c)
     {
         capacity=_c;
         data=std::vector<bitType>(capacity,0);
     }
     void serialInput(const bitType &_input)
     {
-        for(int k=0;k<capacity-1;++k)
+        for(uint8_t k=0;k<capacity-1;++k)
             data[k]=data[k+1];
         data[capacity-1]=_input;
     }
-    void parallelInput(const bitType* &_input)
+    void parallelInput(const reg* _src)
     {
-        for(int k=0;k<capacity;++k)
-            data[k]=_input[k];
+        if(_src==this) return;
+        uint8_t minSize=std::min(this->capacity,_src->capacity);
+        data=std::vector<bitType>(capacity,0);
+        for(uint8_t k=0;k<minSize;++k)
+            data[capacity-1-k]=_src->data[_src->capacity-1-k];
     }
     friend std::ostream& operator<<(std::ostream& os, const reg& obj)
     {
-        for(int k=0;k<obj.capacity;++k)
+        for(uint8_t k=0;k<obj.capacity;++k)
             os<<(int)obj.data[k];
         return os;
     }
-    bitType& operator[](int _idx) {return data[_idx];}
+    bitType& operator[](uint8_t _idx) {return data[_idx];}
     void readInput(void)
     {
         std::string input;
         std::cout<<"Podaj wejscie:";
         std::cin>>input;
-        for(int k=0;k<capacity;++k)
+        for(uint8_t k=0;k<capacity;++k)
             data[k]=input[k]-48;
     }
     reg& operator++()
     {
         ++data[capacity-1];
-        for(int k=capacity-1;k>0;--k)
+        for(uint8_t k=capacity-1;k>0;--k)
         {
             data[k-1]+=data[k]/2;
             data[k]%=2;
         }
         data[0]%=2;
-        return *this; // return new value by reference
+        return *this;
     }
-    int getValue(void) const
+    uint8_t getValue(void) const
     {
-        int rv=0;
-        int power2=1;
-        for(int k=capacity-1;k>=0;--k)
+        uint8_t rv=0;
+        uint8_t power2=1;
+        for(int8_t k=capacity-1;k>=0;--k)
         {
             rv+=data[k]*power2;
             power2*=2;
         }
         return rv;
     }
-    void fromValue(int _value)
+    void fromValue(uint8_t _value)
     {
-        for(int k=capacity-1;k>=0;--k)
+        uint8_t pow2capacity;
+        pow2capacity=1<<capacity;
+        _value%=pow2capacity;
+        for(int8_t k=capacity-1;k>=0;--k)
         {
             data[k]=_value%2;
             _value/=2;
         }
-    }
-    void copyFrom(const reg *_src)
-    {
-        if(_src==this) return;
-        int minSize=std::min(this->capacity,_src->capacity);
-        data=std::vector<bitType>(capacity,0);
-        for(int k=0;k<minSize;++k)
-            data[capacity-1-k]=_src->data[_src->capacity-1-k];
     }
 };
 
@@ -176,8 +174,8 @@ public:
     }
     reg &calculate(reg &_R1, reg &_R2, const reg &_command)
     {
-        int r1v=_R1.getValue();
-        int r2v=_R2.getValue();
+        uint8_t r1v=_R1.getValue();
+        uint8_t r2v=_R2.getValue();
         if(_command.getValue()<16)
         {
             switch (_command.getValue())
@@ -195,7 +193,7 @@ public:
                 outReg.fromValue(r1v+r2v);
                 break;
             case 4:
-                outReg.fromValue(r1v*r1v+r2v*r2v);
+                outReg.fromValue(r1v*r1v-r2v*r2v);
                 break;
             case 5:
                 outReg.fromValue(r1v*2);
@@ -236,18 +234,18 @@ public:
         }
         else
         {
-            for(int k=0;k<4;++k)
+            for(uint8_t k=0;k<4;++k)
             {
                 switch (_command.getValue()-16)
                 {
                 case 0:
-                    outReg[k]=~_R1[k];
+                    outReg[k]=!_R1[k];
                     break;
                 case 1:
-                    outReg[k]=~(_R1[k] & _R2[k]);
+                    outReg[k]=!(_R1[k] & _R2[k]);
                     break;
                 case 2:
-                    outReg[k]=~_R1[k] | _R2[k];
+                    outReg[k]=!_R1[k] | _R2[k];
                     break;
                 case 3:
                     outReg[k]=1;
@@ -256,37 +254,37 @@ public:
                     outReg[k]=(_R1[k] + _R2[k])%2;
                     break;
                 case 5:
-                    outReg[k]=~(_R1[k] == _R2[k]);
+                    outReg[k]=!(_R1[k] == _R2[k]);
                     break;
                 case 6:
-                    outReg[k]=(~_R1[k]) | _R2[k];
+                    outReg[k]=(!_R1[k]) | _R2[k];
                     break;
                 case 7:
                     outReg[k]=_R1[k] | _R2[k];
                     break;
                 case 8:
-                    outReg[k]=~((~_R1[k]) | _R2[k]);
+                    outReg[k]=!((!_R1[k]) | _R2[k]);
                     break;
                 case 9:
-                    outReg[k]=~(~_R1[k] & _R2[k]);
+                    outReg[k]=!((!_R1[k]) & _R2[k]);
                     break;
                 case 10:
                     outReg[k]=_R1[k] & _R2[k];
                     break;
                 case 11:
-                    outReg[k]=~((_R1[k] + _R2[k])%2);
+                    outReg[k]=!((_R1[k] + _R2[k])%2);
                     break;
                 case 12:
-                    outReg[k]=~_R2[k];
+                    outReg[k]=!_R2[k];
                     break;
                 case 13:
-                    outReg[k]=~(_R1[k] | _R2[k]);
+                    outReg[k]=!(_R1[k] | _R2[k]);
                     break;
                 case 14:
                     outReg[k]=_R1[k] == _R2[k];
                     break;
                 case 15:
-                    outReg[k]=~((_R1[k] + _R2[k])%2);
+                    outReg[k]=!((_R1[k] + _R2[k])%2);
                     break;
                 default:
                     break;
@@ -305,18 +303,19 @@ private:
     ram memory;
     alu aluUnit;
     bool end;
+    bool nowait;
 public:
     device():A(4), B(4), C(4), R1(4), R2(4), command(5), Rc(2), RI(3), input(4)
     {
         memory.readFromFile(RAMfilename);
         end=false;
-//        std::cout<<pamiec;
+        nowait=false;
     }
     void displayState() const
     {
         std::cout<<"RI: "<<RI<<" Rc:"<<Rc<<" A: "<<A<<" B: "<<B<<" C:"<<C<<"\n";
     }
-    reg* getTxPtr(int _id)
+    reg* getTxPtr(uint8_t _id)
     {
         if(_id==0) {return &RI;}
         if(_id==1) {return &A;}
@@ -326,7 +325,7 @@ public:
         if(_id==5) {input.readInput(); return &input;}
         return nullptr;
     }
-    reg* getRxPtr(int _id)
+    reg* getRxPtr(uint8_t _id)
     {
         if(_id==0) {return &RI;}
         if(_id==1) {return &A;}
@@ -339,14 +338,14 @@ public:
     void doStep()
     {
         microcycle uc=memory[RI.getValue()][Rc.getValue()];
-        int txId=uc.getTxId();
-        int rxId=uc.getRxId();
+        uint8_t txId=uc.getTxId();
+        uint8_t rxId=uc.getRxId();
         txPtr=getTxPtr(txId);
         rxPtr=getRxPtr(rxId);
         if(rxId==6)
             std::cout<<"Output:"<<&txPtr<<"\n";
         else
-            rxPtr->copyFrom(txPtr);
+            rxPtr->parallelInput(txPtr);
 
         if(Rc.getValue()==0 || Rc.getValue()==1)
         {
@@ -368,8 +367,12 @@ public:
         do{
             displayState();
             doStep();
-            kbInp=std::getchar();
-            if(kbInp=='q') break;
+            if(!nowait)
+            {
+                kbInp=std::getchar();
+                if(kbInp=='q') break;
+                if(kbInp=='n') nowait=true;
+            }
             //if(kbInp=='a' || kbInp=='A') std::cout<<"RejA: "<<A<<"\n";
             //if(kbInp=='b' || kbInp=='B') std::cout<<"RejB: "<<B<<"\n";
             //if(kbInp=='c' || kbInp=='C') std::cout<<"RejC: "<<C<<"\n";

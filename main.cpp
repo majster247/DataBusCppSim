@@ -344,7 +344,7 @@ public:
         txPtr=getTxPtr(txId);
         rxPtr=getRxPtr(rxId);
         if(rxId==6)
-            std::cout<<"Output:"<<&txPtr<<"\n";
+            std::cout<<"Output:"<<*txPtr<<"\n";
         else
             rxPtr->parallelInput(txPtr);
 

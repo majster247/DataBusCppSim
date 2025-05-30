@@ -249,7 +249,7 @@ public:
                     outReg[k]=!_R1[k] | _R2[k];
                     break;
                 case 3:
-                    outReg[3]=1;
+                    outReg[k]=1;
                     break;
                 case 4:
                     outReg[k]=(_R1[k] + _R2[k])%2;

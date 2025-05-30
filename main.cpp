@@ -185,13 +185,13 @@ public:
                 outReg.fromValue(0);
                 break;
             case 1:
-                outReg.fromValue(r1v+r2v);
+                outReg.fromValue(r1v/r2v);
                 break;
             case 2:
                 outReg.fromValue(r1v*r2v-1);
                 break;
             case 3:
-                outReg.fromValue(r1v/r2v);
+                outReg.fromValue(r1v+r2v);
                 break;
             case 4:
                 outReg.fromValue(r1v*r1v-r2v*r2v);

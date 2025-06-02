@@ -177,9 +177,14 @@ public:
     {
         uint8_t r1v=_R1.getValue();
         uint8_t r2v=_R2.getValue();
-        if(_command.getValue()<16)
+
+        // XXMDCBXA -> 000MDCBA
+        uint8_t command = ((_command.getValue() >> 1) & 0b00011110)
+                        + _command.getValue() % 2;
+
+        if(command<16)
         {
-            switch (_command.getValue())
+            switch (command)
             {
             case 0:
                 outReg.fromValue(0);
@@ -237,7 +242,7 @@ public:
         {
             for(uint8_t k=0;k<4;++k)
             {
-                switch (_command.getValue()-16)
+                switch (command-16)
                 {
                 case 0:
                     outReg[k]=!_R1[k];
@@ -348,13 +353,9 @@ public:
         else
             rxPtr->parallelInput(txPtr);
 
-        if(Rc.getValue()==0 || Rc.getValue()==1)
+        if(rxId == 0 || rxId == 4 || rxId == 5)
         {
             command.serialInput(uc[6]);
-            command.serialInput(uc[7]);
-        }
-        if(Rc.getValue()==2)
-        {
             command.serialInput(uc[7]);
         }
 

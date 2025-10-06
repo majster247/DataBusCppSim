@@ -28,7 +28,7 @@ public:
     {
         if(_text.size()!=capacity) return;
         for(uint8_t k=0;k<capacity;k++)
-            data[k]=_text[k];
+            data[k]=_text[k] - '0';
     }
     bitType& operator[](uint8_t _idx) {return data[_idx];}
     uint8_t getTxId(void) const {return data[0]*4+data[1]*2+data[2];}
@@ -79,9 +79,10 @@ public:
         uint8_t microcycle=0;
         while(std::getline(file, str))
         {
-            if(str[0]=='#') continue;
+            if(str.empty() || str[0]=='#') continue;
+            if(str.size() < 8) continue;
             for(uint8_t k=0;k<8;k++)
-                data[cycle][microcycle][k]=str[k]-48;
+                data[cycle][microcycle][k]=str[k]-'0';
             ++microcycle;
             cycle+=microcycle/4;
             microcycle%=4;
